@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="${event.title + ' - EventHub'}">Chi tiết sự kiện</title>
+</head>
+<body>
+<main>
+<div class="container">
+    <!-- Back button -->
+    <div class="mb-3">
+        <a th:href="@{/events}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: main content -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <!-- Banner -->
+                <div th:if="${event.bannerImagePath != null}">
+                    <img th:src="@{'/uploads/' + ${event.bannerImagePath}}"
+                         class="event-banner" alt="Banner">
+                </div>
+                <div th:unless="${event.bannerImagePath != null}"
+                     style="background:linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);height:280px;display:flex;align-items:center;justify-content:center;border-radius:12px 12px 0 0;">
+                    <i class="bi bi-calendar-event text-white" style="font-size:5rem;opacity:0.7;"></i>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Status badge -->
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                        <span class="badge bg-success fs-6 px-3 py-2" th:if="${event.status.name() == 'PUBLISHED'}">
+                            <i class="bi bi-broadcast me-1"></i>Đang mở
+                        </span>
+                        <span class="badge bg-secondary fs-6 px-3 py-2" th:if="${event.status.name() == 'DRAFT'}">
+                            <i class="bi bi-pencil me-1"></i>Bản nháp
+                        </span>
+                        <span class="badge bg-danger fs-6 px-3 py-2" th:if="${event.status.name() == 'CANCELLED'}">
+                            <i class="bi bi-x-circle me-1"></i>Đã hủy
+                        </span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2"
+                              th:each="tag : ${event.tags}" th:text="${tag}"></span>
+                    </div>
+
+                    <h1 class="fw-bold" th:text="${event.title}">Tên sự kiện</h1>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-person-badge me-1"></i>
+                        Tổ chức bởi: <strong th:text="${event.organizerName}">Organizer</strong>
+                    </p>
+
+                    <hr>
+
+                    <h5 class="fw-semibold mb-3">Về sự kiện này</h5>
+                    <p th:text="${event.description}" style="white-space:pre-line;line-height:1.8;">Mô tả</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: info card -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm info-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Thông tin sự kiện</h5>
+
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="bi bi-calendar3 text-primary me-3 fs-5 mt-1"></i>
+                        <div>
+                            <div class="fw-semibold">Bắt đầu</div>
+                            <small class="text-muted" th:text="${#temporals.format(event.startDate, 'HH:mm, dd/MM/yyyy')}"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="bi bi-calendar-x text-danger me-3 fs-5 mt-1"></i>
+                        <div>
+                            <div class="fw-semibold">Kết thúc</div>
+                            <small class="text-muted" th:text="${#temporals.format(event.endDate, 'HH:mm, dd/MM/yyyy')}"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="bi bi-geo-alt text-danger me-3 fs-5 mt-1"></i>
+                        <div>
+                            <div class="fw-semibold">Địa điểm</div>
+                            <small class="text-muted" th:text="${event.location}"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-4">
+                        <i class="bi bi-people text-success me-3 fs-5 mt-1"></i>
+                        <div>
+                            <div class="fw-semibold">Số người tham dự</div>
+                            <div th:if="${event.maxCapacity > 0}">
+                                <small class="text-muted fw-semibold"
+                                       th:text="${event.currentAttendees + '/' + event.maxCapacity}"></small>
+                                <div class="progress mt-1" style="height:6px;width:150px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         th:style="'width:' + ${event.maxCapacity > 0 ? (event.currentAttendees * 100 / event.maxCapacity) : 0} + '%'"></div>
+                                </div>
+                                <small class="text-success" th:if="${spotsLeft > 0}"
+                                       th:text="${spotsLeft} + ' chỗ còn lại'"></small>
+                                <small class="text-danger" th:if="${spotsLeft <= 0}">Đã hết chỗ</small>
+                            </div>
+                            <div th:unless="${event.maxCapacity > 0}">
+                                <small class="text-success"><i class="bi bi-infinity me-1"></i>Không giới hạn</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Register buttons based on role/status -->
+                    <!-- GUEST -->
+                    <a sec:authorize="isAnonymous()" th:href="@{/auth/login}"
+                       class="btn btn-primary btn-lg w-100" th:if="${event.status.name() == 'PUBLISHED'}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập để đăng ký
+                    </a>
+
+                    <!-- ATTENDEE - not yet registered -->
+                    <form sec:authorize="hasRole('ATTENDEE')"
+                          th:if="${!alreadyRegistered && (event.maxCapacity == 0 || spotsLeft > 0) && event.status.name() == 'PUBLISHED'}"
+                          th:action="@{/events/{id}/register(id=${event.id})}" method="post">
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="bi bi-calendar-check me-1"></i>Đăng ký tham dự
+                        </button>
+                    </form>
+
+                    <!-- ATTENDEE - already registered -->
+                    <div sec:authorize="hasRole('ATTENDEE')" th:if="${alreadyRegistered}"
+                         class="alert alert-success text-center mb-0">
+                        <i class="bi bi-check-circle-fill me-1"></i>Bạn đã đăng ký sự kiện này
+                    </div>
+
+                    <!-- Full -->
+                    <div th:if="${event.maxCapacity > 0 && spotsLeft <= 0}"
+                         class="alert alert-warning text-center mb-0">
+                        <i class="bi bi-exclamation-triangle me-1"></i>Sự kiện đã hết chỗ
+                    </div>
+
+                    <!-- Cancelled -->
+                    <div th:if="${event.status.name() == 'CANCELLED'}"
+                         class="alert alert-danger text-center mb-0">
+                        <i class="bi bi-x-circle me-1"></i>Sự kiện đã bị hủy
+                    </div>
+
+                    <!-- ORGANIZER actions -->
+                    <div sec:authorize="hasRole('ORGANIZER')" class="d-flex gap-2 mt-3">
+                        <a th:href="@{/events/{id}/edit(id=${event.id})}" class="btn btn-outline-primary flex-fill">
+                            <i class="bi bi-pencil me-1"></i>Sửa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+</body>
+</html>

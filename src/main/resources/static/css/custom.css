@@ -1,0 +1,290 @@
+/* ===== Custom CSS for EventHub ===== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --success: #198754;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --light-bg: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+    --radius: 12px;
+    --transition: 0.25s ease;
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #2d3748;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background: linear-gradient(135deg, #0d6efd 0%, #0099e6 100%) !important;
+    box-shadow: 0 2px 16px rgba(13, 110, 253, 0.35);
+    padding: 0.75rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    transition: background var(--transition);
+}
+
+.navbar-nav .nav-link:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+/* ===== CARDS ===== */
+.card {
+    border: none;
+    border-radius: var(--radius);
+    transition: transform var(--transition), box-shadow var(--transition);
+    background: #ffffff;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.card-img-top {
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* ===== BANNER PLACEHOLDER ===== */
+.banner-placeholder {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* ===== STAT CARDS ===== */
+.stat-card {
+    border-radius: var(--radius) !important;
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all var(--transition);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0099e6);
+    border: none;
+    box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(13,110,253,0.4);
+}
+
+.btn-success {
+    box-shadow: 0 4px 12px rgba(25,135,84,0.3);
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(25,135,84,0.45);
+}
+
+/* ===== BADGES ===== */
+.badge {
+    border-radius: 20px;
+    font-weight: 500;
+    padding: 0.35em 0.75em;
+}
+
+.event-tags .badge {
+    font-size: 0.72rem;
+    cursor: default;
+}
+
+/* ===== FORMS ===== */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    padding: 0.6rem 1rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    color: white;
+    padding: 2.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* ===== TABLES ===== */
+.table {
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f1f5ff;
+    font-weight: 600;
+    border: none;
+    padding: 1rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #4a5568;
+}
+
+.table tbody td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-color: #f0f0f0;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9ff;
+}
+
+/* ===== ALERTS ===== */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress {
+    border-radius: 20px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 20px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+}
+
+/* ===== PAGINATION ===== */
+.page-link {
+    border-radius: 8px !important;
+    margin: 0 2px;
+    font-weight: 500;
+    color: var(--primary);
+    border: 1.5px solid #e2e8f0;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #0d6efd, #0099e6);
+    border-color: transparent;
+}
+
+/* ===== AUTH PAGES ===== */
+.auth-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd15 0%, #6610f215 100%);
+    display: flex;
+    align-items: center;
+}
+
+.auth-card {
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12) !important;
+}
+
+.auth-logo {
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* ===== LOADING ANIMATION ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card, .alert {
+    animation: fadeInUp 0.3s ease forwards;
+}
+
+/* ===== EVENT DETAIL ===== */
+.event-banner {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: var(--radius);
+}
+
+.info-card {
+    border-radius: var(--radius) !important;
+    position: sticky;
+    top: 80px;
+}
+
+/* ===== DASHBOARD ===== */
+.chart-container {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title th:text="${event.title + ' - Danh sách đăng ký'}">Đăng ký sự kiện</title>
+</head>
+<body>
+<main>
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a th:href="@{/organizer/my-events}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h2 class="fw-bold mb-0">Danh sách đăng ký</h2>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <h5 class="fw-bold" th:text="${event.title}"></h5>
+        <div class="d-flex gap-3 flex-wrap">
+            <small class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>
+                <span th:text="${#temporals.format(event.startDate, 'dd/MM/yyyy HH:mm')}"></span>
+            </small>
+            <small class="text-muted">
+                <i class="bi bi-geo-alt me-1"></i>
+                <span th:text="${event.location}"></span>
+            </small>
+            <small class="text-success fw-bold">
+                <i class="bi bi-people me-1"></i>
+                <span th:text="${registrations.size() + ' người đã đăng ký'}"></span>
+            </small>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm" th:if="${!registrations.isEmpty()}">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Ngày đăng ký</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reg, iter : ${registrations}">
+                    <td class="text-muted" th:text="${iter.index + 1}"></td>
+                    <td class="fw-semibold" th:text="${reg.userFullName}"></td>
+                    <td><small th:text="${reg.userEmail}"></small></td>
+                    <td><small class="text-muted" th:text="${#temporals.format(reg.registeredAt, 'dd/MM/yyyy HH:mm')}"></small></td>
+                    <td>
+                        <span class="badge bg-success" th:if="${reg.status == 'CONFIRMED'}">Confirmed</span>
+                        <span class="badge bg-secondary" th:if="${reg.status == 'CANCELLED'}">Cancelled</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="text-center py-4" th:if="${registrations.isEmpty()}">
+    <i class="bi bi-people fs-1 text-muted"></i>
+    <h6 class="mt-2 text-muted">Chưa có ai đăng ký sự kiện này</h6>
+</div>
+</main>
+</body>
+</html>

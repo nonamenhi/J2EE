@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Báo cáo - EventHub</title>
+</head>
+<body>
+<main>
+<h2 class="fw-bold mb-4"><i class="bi bi-bar-chart me-2"></i>Báo cáo sự kiện</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h5 class="fw-semibold mb-3">Xem danh sách đăng ký theo sự kiện</h5>
+        <div class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <select id="eventSelect" class="form-select form-select-lg">
+                    <option value="">-- Chọn sự kiện --</option>
+                    <option th:each="e : ${events}" th:value="${e.id}" th:text="${e.title}"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary btn-lg w-100" onclick="loadReport()">
+                    <i class="bi bi-search me-1"></i>Xem báo cáo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="reportSection" class="mt-4 d-none">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <iframe id="reportFrame" src="" style="width:100%;height:600px;border:none;"></iframe>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h5 class="fw-semibold mb-3">Danh sách tất cả sự kiện</h5>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Sự kiện</th>
+                        <th>Trạng thái</th>
+                        <th>Tổng đăng ký</th>
+                        <th>Sức chứa</th>
+                        <th>Báo cáo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${events}">
+                        <td>
+                            <div class="fw-semibold" th:text="${e.title}"></div>
+                            <small class="text-muted" th:text="${e.organizerName}"></small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${e.status.name() == 'PUBLISHED'}">PUBLISHED</span>
+                            <span class="badge bg-secondary" th:if="${e.status.name() == 'DRAFT'}">DRAFT</span>
+                            <span class="badge bg-danger" th:if="${e.status.name() == 'CANCELLED'}">CANCELLED</span>
+                        </td>
+                        <td><strong th:text="${e.currentAttendees}"></strong></td>
+                        <td>
+                            <span th:if="${e.maxCapacity > 0}" th:text="${e.maxCapacity}"></span>
+                            <span th:unless="${e.maxCapacity > 0}">∞</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/organizer/events/{id}/registrations(id=${e.id})}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-list-check me-1"></i>Xem danh sách
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</main>
+</body>
+</html>

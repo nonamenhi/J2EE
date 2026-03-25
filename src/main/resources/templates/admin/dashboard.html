@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Admin Dashboard - EventHub</title>
+</head>
+<body>
+<main>
+<!-- Page Header -->
+<div class="page-header text-white mb-0" style="margin-top:-1.5rem;">
+    <div class="container">
+        <h1 class="mb-1"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h1>
+        <p class="mb-0 opacity-75">Tổng quan hệ thống EventHub</p>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <!-- Stat Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card text-white shadow" style="background:linear-gradient(135deg,#0d6efd,#0099e6);">
+                <div class="card-body d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="stat-value" th:text="${totalEvents}">0</div>
+                        <div class="small opacity-75">Tổng sự kiện</div>
+                    </div>
+                    <i class="bi bi-calendar-event stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card text-white shadow" style="background:linear-gradient(135deg,#198754,#20c997);">
+                <div class="card-body d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="stat-value" th:text="${publishedEvents}">0</div>
+                        <div class="small opacity-75">Đang Published</div>
+                    </div>
+                    <i class="bi bi-broadcast stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card text-white shadow" style="background:linear-gradient(135deg,#6f42c1,#d63384);">
+                <div class="card-body d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
+                        <div class="small opacity-75">Tổng người dùng</div>
+                    </div>
+                    <i class="bi bi-people stat-icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card text-white shadow" style="background:linear-gradient(135deg,#fd7e14,#ffc107);">
+                <div class="card-body d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="stat-value" th:text="${totalRegistrations}">0</div>
+                        <div class="small opacity-75">Lượt đăng ký</div>
+                    </div>
+                    <i class="bi bi-bookmark-check stat-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart + Top 5 -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-7">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart me-1"></i>Sự kiện theo tháng</h5>
+                <canvas id="eventsByMonthChart" height="90"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-trophy me-1 text-warning"></i>Top 5 sự kiện đông khách</h5>
+                    <div th:each="e, iter : ${top5Events}" class="d-flex align-items-center mb-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold me-3"
+                             style="width:32px;height:32px;min-width:32px;background:linear-gradient(135deg,#0d6efd,#6610f2);font-size:0.8rem;"
+                             th:text="${iter.index + 1}"></div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-truncate small" th:text="${e.title}"></div>
+                            <small class="text-muted" th:text="${e.currentAttendees + ' người tham dự'}"></small>
+                        </div>
+                    </div>
+                    <p class="text-muted text-center py-3 mb-0" th:if="${top5Events.isEmpty()}">
+                        Chưa có sự kiện nào
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Events Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3"><i class="bi bi-clock-history me-1"></i>Sự kiện gần đây</h5>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tên sự kiện</th>
+                            <th>Trạng thái</th>
+                            <th>Organizer</th>
+                            <th>Đăng ký</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${recentEvents}">
+                            <td>
+                                <a th:href="@{/events/{id}(id=${e.id})}" class="fw-semibold text-decoration-none"
+                                   th:text="${e.title}"></a>
+                            </td>
+                            <td>
+                                <span class="badge bg-success" th:if="${e.status.name() == 'PUBLISHED'}">PUBLISHED</span>
+                                <span class="badge bg-secondary" th:if="${e.status.name() == 'DRAFT'}">DRAFT</span>
+                                <span class="badge bg-danger" th:if="${e.status.name() == 'CANCELLED'}">CANCELLED</span>
+                            </td>
+                            <td><small th:text="${e.organizerName}"></small></td>
+                            <td><strong th:text="${e.currentAttendees}"></strong></td>
+                            <td><small class="text-muted" th:text="${#temporals.format(e.createdAt, 'dd/MM/yyyy')}"></small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+new Chart(document.getElementById('eventsByMonthChart'), {
+    type: 'bar',
+    data: {
+        labels: /*[[${monthLabels}]]*/ [],
+        datasets: [{
+            label: 'Số sự kiện',
+            data: /*[[${monthData}]]*/ [],
+            backgroundColor: 'rgba(13, 110, 253, 0.75)',
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+        }
+    }
+});
+</script>
+</main>
+</body>
+</html>

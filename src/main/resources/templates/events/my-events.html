@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Sự kiện của tôi - EventHub</title>
+</head>
+<body>
+<main>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0"><i class="bi bi-calendar-week me-2"></i>Sự kiện của tôi</h2>
+    <a th:href="@{/events/create}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i>Tạo sự kiện mới
+    </a>
+</div>
+
+<!-- Filter by status -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body py-2">
+        <div class="d-flex gap-2 flex-wrap">
+            <a th:href="@{/organizer/my-events}"
+               class="btn btn-sm"
+               th:classappend="${selectedStatus == ''} ? 'btn-primary' : 'btn-outline-secondary'">
+                Tất cả
+            </a>
+            <a th:each="s : ${statuses}"
+               th:href="@{/organizer/my-events(status=${s.name()})}"
+               class="btn btn-sm"
+               th:classappend="${selectedStatus == s.name()} ? 'btn-primary' : 'btn-outline-secondary'"
+               th:text="${s.name()}"></a>
+        </div>
+    </div>
+</div>
+
+<!-- Events Table -->
+<div class="card shadow-sm" th:if="${!events.isEmpty()}">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Sự kiện</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tổ chức</th>
+                    <th>Đăng ký</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="event : ${events.content}">
+                    <td>
+                        <div class="fw-semibold" th:text="${event.title}"></div>
+                        <small class="text-muted" th:text="${event.location}"></small>
+                    </td>
+                    <td>
+                        <span class="badge bg-success" th:if="${event.status.name() == 'PUBLISHED'}">PUBLISHED</span>
+                        <span class="badge bg-secondary" th:if="${event.status.name() == 'DRAFT'}">DRAFT</span>
+                        <span class="badge bg-danger" th:if="${event.status.name() == 'CANCELLED'}">CANCELLED</span>
+                    </td>
+                    <td>
+                        <small th:text="${#temporals.format(event.startDate, 'dd/MM/yyyy HH:mm')}"></small>
+                    </td>
+                    <td>
+                        <span class="fw-semibold" th:text="${event.currentAttendees}"></span>
+                        <span th:if="${event.maxCapacity > 0}" th:text="'/' + ${event.maxCapacity}" class="text-muted"></span>
+                        <span th:unless="${event.maxCapacity > 0}" class="text-muted">/ ∞</span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-xs btn-outline-secondary btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a th:if="${event.status.name() != 'CANCELLED'}"
+                               th:href="@{/events/{id}/edit(id=${event.id})}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/organizer/events/{id}/registrations(id=${event.id})}"
+                               class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-people"></i>
+                            </a>
+                            <form th:action="@{/events/{id}/delete(id=${event.id})}" method="post"
+                                  onsubmit="return confirm('Xác nhận hủy/xóa sự kiện này?')">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Empty state -->
+<div class="text-center py-5" th:if="${events.isEmpty()}">
+    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">Bạn chưa có sự kiện nào</h5>
+    <a th:href="@{/events/create}" class="btn btn-primary mt-2">
+        <i class="bi bi-plus-circle me-1"></i>Tạo ngay
+    </a>
+</div>
+
+<!-- Pagination -->
+<nav th:if="${events.totalPages > 1}" class="mt-3 d-flex justify-content-center">
+    <ul class="pagination">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/organizer/my-events(status=${selectedStatus},page=${currentPage-1})}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, events.totalPages - 1)}"
+            th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link" th:href="@{/organizer/my-events(status=${selectedStatus},page=${i})}"
+               th:text="${i + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == events.totalPages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/organizer/my-events(status=${selectedStatus},page=${currentPage+1})}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+</main>
+</body>
+</html>
