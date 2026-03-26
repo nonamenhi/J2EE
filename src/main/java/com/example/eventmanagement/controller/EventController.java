@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,17 +34,27 @@ public class EventController {
     public String listEvents(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String tag,
+            @RequestParam(defaultValue = "") String location,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "0") int page,
             Model model) {
 
         PageRequest pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Event> events = eventService.getPublishedEvents(keyword, tag, pageable);
+        Page<Event> events = eventService.getPublishedEvents(keyword, tag, location, dateFrom, dateTo, pageable);
         List<String> allTags = eventService.getAllTags();
+
+        // Lấy danh sách tỉnh thành từ DB (distinct location values)
+        List<String> allLocations = eventService.getAllLocations();
 
         model.addAttribute("events", events);
         model.addAttribute("allTags", allTags);
+        model.addAttribute("allLocations", allLocations);
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedTag", tag);
+        model.addAttribute("selectedLocation", location);
+        model.addAttribute("dateFrom", dateFrom);
+        model.addAttribute("dateTo", dateTo);
         model.addAttribute("currentPage", page);
         return "events/list";
     }

@@ -38,11 +38,11 @@ public class SecurityConfig {
                 .requestMatchers("/my-registrations").hasRole("ATTENDEE")
                 .requestMatchers("/events/*/register").hasRole("ATTENDEE")
                 .requestMatchers("/registrations/*/cancel").hasRole("ATTENDEE")
-                // ORGANIZER
-                .requestMatchers("/organizer/**").hasRole("ORGANIZER")
-                .requestMatchers("/events/create").hasRole("ORGANIZER")
-                .requestMatchers("/events/*/edit").hasRole("ORGANIZER")
-                .requestMatchers("/events/*/delete").hasRole("ORGANIZER")
+                // ORGANIZER (ADMIN cũng được phép vào để xem báo cáo)
+                .requestMatchers("/organizer/**").hasAnyRole("ORGANIZER", "ADMIN")
+                .requestMatchers("/events/create").hasAnyRole("ORGANIZER", "ADMIN")
+                .requestMatchers("/events/*/edit").hasAnyRole("ORGANIZER", "ADMIN")
+                .requestMatchers("/events/*/delete").hasAnyRole("ORGANIZER", "ADMIN")
                 // ADMIN
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

@@ -19,30 +19,65 @@
         <!-- Search & Filter -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <form th:action="@{/events}" method="get" class="row g-2 align-items-center">
-                    <div class="col-md-5">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i class="bi bi-search text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0" name="keyword"
-                                   th:value="${keyword}" placeholder="Tìm tên sự kiện...">
+                <form th:action="@{/events}" method="get">
+                    <div class="row g-2 align-items-end">
+                        <!-- Từ khóa -->
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted fw-semibold mb-1">
+                                <i class="bi bi-search me-1"></i>Tìm tên sự kiện
+                            </label>
+                            <input type="text" class="form-control" name="keyword"
+                                   th:value="${keyword}" placeholder="Nhập từ khóa...">
+                        </div>
+                        <!-- Danh mục -->
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted fw-semibold mb-1">
+                                <i class="bi bi-tag me-1"></i>Danh mục
+                            </label>
+                            <select class="form-select" name="tag">
+                                <option value="">-- Tất cả --</option>
+                                <option th:each="t : ${allTags}" th:value="${t}" th:text="${t}"
+                                        th:selected="${t == selectedTag}"></option>
+                            </select>
+                        </div>
+                        <!-- Tỉnh thành -->
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted fw-semibold mb-1">
+                                <i class="bi bi-geo-alt me-1"></i>Tỉnh / Thành phố
+                            </label>
+                            <select class="form-select" name="location">
+                                <option value="">-- Tất cả --</option>
+                                <option th:each="loc : ${allLocations}" th:value="${loc}" th:text="${loc}"
+                                        th:selected="${loc == selectedLocation}"></option>
+                            </select>
+                        </div>
+                        <!-- Từ ngày -->
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted fw-semibold mb-1">
+                                <i class="bi bi-calendar-check me-1"></i>Từ ngày
+                            </label>
+                            <input type="date" class="form-control" name="dateFrom"
+                                   th:value="${dateFrom}">
+                        </div>
+                        <!-- Đến ngày -->
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted fw-semibold mb-1">
+                                <i class="bi bi-calendar-x me-1"></i>Đến ngày
+                            </label>
+                            <input type="date" class="form-control" name="dateTo"
+                                   th:value="${dateTo}">
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <select class="form-select" name="tag">
-                            <option value="">-- Tất cả danh mục --</option>
-                            <option th:each="t : ${allTags}" th:value="${t}" th:text="${t}"
-                                    th:selected="${t == selectedTag}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary flex-fill">
-                            <i class="bi bi-funnel me-1"></i>Lọc
-                        </button>
-                        <a th:href="@{/events}" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                        </a>
+                    <!-- Buttons -->
+                    <div class="row mt-2">
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-funnel me-1"></i>Lọc
+                            </button>
+                            <a th:href="@{/events}" class="btn btn-outline-secondary ms-1">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Xóa lọc
+                            </a>
+                        </div>
                     </div>
                 </form>
             </div>

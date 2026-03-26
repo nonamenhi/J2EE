@@ -31,10 +31,14 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.example.eventmanagement.repository.EventRepository eventRepository;
+
     @Override
     public void run(String... args) {
         createIndexes();
         seedDefaultUsers();
+        seedDefaultEvents();
     }
 
     private void createIndexes() {
@@ -82,5 +86,33 @@ public class DatabaseInitializer implements CommandLineRunner {
         u.setCreatedAt(LocalDateTime.now());
         u.setUpdatedAt(LocalDateTime.now());
         return u;
+    }
+
+    private void seedDefaultEvents() {
+        if (eventRepository.count() == 0) {
+            User organizer = userRepository.findByEmail("organizer@event.com").orElse(null);
+            if (organizer == null) return;
+
+            java.util.List<Event> events = new java.util.ArrayList<>();
+            for (int i = 1; i <= 20; i++) {
+                Event e = new Event();
+                e.setTitle("Sự kiện Demo " + i);
+                e.setDescription("Mô tả chi tiết cho sự kiện demo số " + i + ". Đây là dữ liệu được tạo tự động để bạn có thể test ứng dụng dễ dàng.");
+                e.setLocation(i % 2 == 0 ? "TP. Hồ Chí Minh" : "Hà Nội");
+                e.setStartDate(LocalDateTime.now().plusDays(i));
+                e.setEndDate(LocalDateTime.now().plusDays(i).plusHours(4));
+                e.setMaxCapacity(50 + (i * 10));
+                e.setCurrentAttendees(0);
+                e.setStatus(com.example.eventmanagement.model.enums.EventStatus.PUBLISHED);
+                e.setTags(java.util.Arrays.asList("Technology", i % 2 == 0 ? "Workshop" : "Seminar"));
+                e.setOrganizerId(organizer.getId());
+                e.setOrganizerName(organizer.getFullName());
+                e.setCreatedAt(LocalDateTime.now());
+                e.setUpdatedAt(LocalDateTime.now());
+                events.add(e);
+            }
+            eventRepository.saveAll(events);
+            System.out.println("✅ Seed data created successfully! (20 events)");
+        }
     }
 }

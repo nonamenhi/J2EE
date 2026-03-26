@@ -1,7 +1,11 @@
 package com.example.eventmanagement.controller;
 
+import com.example.eventmanagement.model.Event;
+import com.example.eventmanagement.model.Registration;
 import com.example.eventmanagement.model.User;
 import com.example.eventmanagement.model.enums.Role;
+import com.example.eventmanagement.service.EventService;
+import com.example.eventmanagement.service.RegistrationService;
 import com.example.eventmanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,11 +16,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     @Autowired private UserService userService;
+    @Autowired private EventService eventService;
+    @Autowired private RegistrationService registrationService;
 
     @GetMapping("/users")
     public String manageUsers(
@@ -63,4 +71,16 @@ public class AdminController {
         }
         return "redirect:/admin/users";
     }
+
+    // Xem danh sách đăng ký của sự kiện (dành cho ADMIN)
+    @GetMapping("/events/{id}/registrations")
+    public String viewEventRegistrations(@PathVariable String id, Model model) {
+        Event event = eventService.getEventById(id);
+        List<Registration> registrations = registrationService.getByEventId(id);
+        model.addAttribute("event", event);
+        model.addAttribute("registrations", registrations);
+        return "registrations/event-registrations";
+    }
 }
+
+

@@ -31,21 +31,42 @@ public class EventServiceImpl implements EventService {
     @Autowired private RegistrationRepository registrationRepository;
     @Autowired private FileStorageService fileStorageService;
 
-    @Override
-    public Page<Event> getPublishedEvents(String keyword, String tag, Pageable pageable) {
-        boolean hasKeyword = StringUtils.hasText(keyword);
-        boolean hasTag = StringUtils.hasText(tag);
+    @Autowired private org.springframework.data.mongodb.core.MongoTemplate mongoTemplate;
 
-        if (hasKeyword && hasTag) {
-            return eventRepository.findByStatusAndTitleContainingAndTagsContaining(
-                    EventStatus.PUBLISHED, keyword, tag, pageable);
-        } else if (hasKeyword) {
-            return eventRepository.findByStatusAndTitleContaining(EventStatus.PUBLISHED, keyword, pageable);
-        } else if (hasTag) {
-            return eventRepository.findByStatusAndTagsContaining(EventStatus.PUBLISHED, tag, pageable);
-        } else {
-            return eventRepository.findByStatus(EventStatus.PUBLISHED, pageable);
+    @Override
+    public Page<Event> getPublishedEvents(String keyword, String tag, String location,
+                                          java.time.LocalDate dateFrom, java.time.LocalDate dateTo,
+                                          Pageable pageable) {
+        org.springframework.data.mongodb.core.query.Criteria criteria =
+                org.springframework.data.mongodb.core.query.Criteria.where("status").is(EventStatus.PUBLISHED);
+
+        if (StringUtils.hasText(keyword)) {
+            criteria.and("title").regex(keyword, "i");
         }
+        if (StringUtils.hasText(tag)) {
+            criteria.and("tags").is(tag);
+        }
+        if (StringUtils.hasText(location)) {
+            criteria.and("location").regex(location, "i");
+        }
+        if (dateFrom != null) {
+            criteria.and("startDate").gte(dateFrom.atStartOfDay());
+        }
+        if (dateTo != null) {
+            if (dateFrom != null) {
+                // startDate đã được khai báo, dùng lte trên cùng field
+                criteria.and("endDate").lte(dateTo.plusDays(1).atStartOfDay());
+            } else {
+                criteria.and("startDate").lte(dateTo.plusDays(1).atStartOfDay());
+            }
+        }
+
+        org.springframework.data.mongodb.core.query.Query query =
+                new org.springframework.data.mongodb.core.query.Query(criteria).with(pageable);
+        long total = mongoTemplate.count(
+                new org.springframework.data.mongodb.core.query.Query(criteria), Event.class);
+        java.util.List<Event> results = mongoTemplate.find(query, Event.class);
+        return new org.springframework.data.domain.PageImpl<>(results, pageable, total);
     }
 
     @Override
@@ -147,6 +168,21 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAll().stream()
                 .filter(e -> e.getTags() != null)
                 .flatMap(e -> e.getTags().stream())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllLocations() {
+        // Trích xuất tên tỉnh/thành phố từ trường location (lấy phần sau dấu phẩy cuối)
+        return eventRepository.findAll().stream()
+                .filter(e -> e.getLocation() != null && !e.getLocation().isBlank())
+                .map(e -> {
+                    String loc = e.getLocation();
+                    int commaIdx = loc.lastIndexOf(",");
+                    return commaIdx >= 0 ? loc.substring(commaIdx + 1).trim() : loc.trim();
+                })
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
