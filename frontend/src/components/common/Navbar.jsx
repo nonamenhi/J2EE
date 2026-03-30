@@ -32,7 +32,7 @@ export default function Navbar() {
         <div className="navbar-auth">
           {user ? (
             <div className="navbar-user">
-              <span className="user-name">👤 {user.fullName}</span>
+              <span className="user-name"onClick={() => navigate('/profile')}style={{ cursor: 'pointer' }}>👤 {user.fullName}</span>
               <span className={`role-badge role-${user.role.toLowerCase()}`}>{user.role}</span>
               <button className="btn-logout" onClick={logout}>Đăng xuất</button>
             </div>
