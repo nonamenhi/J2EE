@@ -19,6 +19,10 @@ import MyEventsPage from './pages/admin/EventManagePage'; // My Events (organize
 import DashboardPage from './pages/admin/DashboardPage';
 import UserManagePage from './pages/admin/UserManagePage';
 
+// Profile pages
+import ProfilePage from './pages/profile/ProfilePage';
+import SavedEventsPage from './pages/profile/SavedEventsPage';
+
 // ---- Guards ----
 const PrivateRoute = ({ children }) => {
   const user = useAuthStore((s) => s.user);
@@ -69,6 +73,10 @@ export default function App() {
         {/* Admin only */}
         <Route path="/admin" element={<AdminRoute><DashboardPage /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><UserManagePage /></AdminRoute>} />
+
+        {/* Profile */}
+        <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+        <Route path="/profile/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

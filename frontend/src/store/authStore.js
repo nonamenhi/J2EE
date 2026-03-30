@@ -41,6 +41,11 @@ const useAuthStore = create(
       },
 
       setUser: (user) => set({ user }),
+
+      // Thêm hàm này
+      updateUser: (updatedData) => set((state) => ({
+        user: { ...state.user, ...updatedData }
+      })),
     }),
     { name: 'eventhub-auth', partialize: (s) => ({ user: s.user }) }
   )
