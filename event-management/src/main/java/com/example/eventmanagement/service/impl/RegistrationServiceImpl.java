@@ -9,6 +9,7 @@ import com.example.eventmanagement.model.enums.EventStatus;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.RegistrationRepository;
 import com.example.eventmanagement.repository.UserRepository;
+import com.example.eventmanagement.service.QrCodeService;
 import com.example.eventmanagement.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,6 +28,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired private EventRepository eventRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private MongoTemplate mongoTemplate;
+    @Autowired private QrCodeService qrCodeService;
 
     @Override
     public Registration register(String eventId, String userEmail) {
@@ -59,6 +61,16 @@ public class RegistrationServiceImpl implements RegistrationService {
         reg.setRegisteredAt(LocalDateTime.now());
         reg.setStatus("CONFIRMED");
         registrationRepository.save(reg);
+
+        // Generate QR code sau khi đã có ID
+        try {
+            String qr = qrCodeService.generateQrBase64(reg.getId(), eventId, user.getId());
+            reg.setQrCodeBase64(qr);
+            registrationRepository.save(reg);
+        } catch (Exception e) {
+            // QR generation không block registration
+            System.err.println("QR generation failed: " + e.getMessage());
+        }
 
         // Atomic increment using MongoTemplate $inc
         mongoTemplate.updateFirst(

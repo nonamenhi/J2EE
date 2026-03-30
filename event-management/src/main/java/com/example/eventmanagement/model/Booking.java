@@ -34,6 +34,11 @@ public class Booking {
     private LocalDateTime createdAt;
     private LocalDateTime cancelledAt;
 
+    // QR Code fields
+    private String qrCodeBase64;
+    private boolean checkedIn = false;
+    private LocalDateTime checkedInAt;
+
     // --- Getters & Setters ---
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -79,4 +84,13 @@ public class Booking {
 
     public LocalDateTime getCancelledAt() { return cancelledAt; }
     public void setCancelledAt(LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }
+
+    public String getQrCodeBase64() { return qrCodeBase64; }
+    public void setQrCodeBase64(String qrCodeBase64) { this.qrCodeBase64 = qrCodeBase64; }
+
+    public boolean isCheckedIn() { return checkedIn; }
+    public void setCheckedIn(boolean checkedIn) { this.checkedIn = checkedIn; }
+
+    public LocalDateTime getCheckedInAt() { return checkedInAt; }
+    public void setCheckedInAt(LocalDateTime checkedInAt) { this.checkedInAt = checkedInAt; }
 }

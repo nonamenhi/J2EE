@@ -9,6 +9,7 @@ import com.example.eventmanagement.repository.BookingRepository;
 import com.example.eventmanagement.repository.EventRepository;
 import com.example.eventmanagement.repository.UserRepository;
 import com.example.eventmanagement.service.BookingService;
+import com.example.eventmanagement.service.QrCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,6 +28,7 @@ public class BookingServiceImpl implements BookingService {
     @Autowired private EventRepository eventRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private MongoTemplate mongoTemplate;
+    @Autowired private QrCodeService qrCodeService;
 
     @Override
     public Booking createBooking(String eventId, String zoneId, int quantity, String userEmail) {
@@ -96,7 +98,18 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus("CONFIRMED");
         booking.setCreatedAt(LocalDateTime.now());
 
-        return bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
+
+        // Generate QR code sau khi đã có ID
+        try {
+            String qr = qrCodeService.generateQrBase64(saved.getId(), eventId, user.getId());
+            saved.setQrCodeBase64(qr);
+            bookingRepository.save(saved);
+        } catch (Exception e) {
+            System.err.println("QR generation failed for booking: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     @Override
