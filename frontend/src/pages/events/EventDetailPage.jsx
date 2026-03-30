@@ -14,11 +14,22 @@ export default function EventDetailPage() {
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('');
 
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [reviewMsg, setReviewMsg] = useState({ text: '', type: '' });
+
   useEffect(() => {
     axiosInstance.get(`/events/${id}`)
       .then(r => setData(r.data))
       .catch(() => navigate('/'))
       .finally(() => setLoading(false));
+
+    // Fetch reviews
+    axiosInstance.get(`/events/${id}/reviews`)
+      .then(r => setReviews(r.data.data))
+      .catch(err => console.error('Failed to load reviews', err));
   }, [id]);
 
   const handleRegister = async () => {
@@ -35,6 +46,21 @@ export default function EventDetailPage() {
     } catch (err) {
       setMessage(err.response?.data?.error || 'Đăng ký thất bại');
       setMsgType('error');
+    }
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) { navigate('/login'); return; }
+    setReviewMsg({ text: 'Đang gửi đánh giá...', type: 'info' });
+    try {
+      const { data: res } = await axiosInstance.post(`/events/${id}/reviews`, { rating, comment });
+      setReviewMsg({ text: res.message, type: 'success' });
+      setReviews([res.data, ...reviews]);
+      setComment('');
+      setRating(5);
+    } catch (err) {
+      setReviewMsg({ text: err.response?.data?.error || 'Đánh giá thất bại', type: 'error' });
     }
   };
 
@@ -167,6 +193,78 @@ export default function EventDetailPage() {
                 {event.tags.map(t => <span key={t} className="tag">{t}</span>)}
               </div>
             )}
+
+            {/* Mục Đánh giá và Phản hồi */}
+            <hr style={{ margin: '3rem 0 2rem 0', borderColor: 'rgba(255,255,255,0.1)' }} />
+            <div className="event-reviews">
+              <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                ⭐ Đánh giá & Phản hồi
+                <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'rgba(255,255,255,0.6)' }}>
+                  ({reviews.length} đánh giá)
+                </span>
+              </h3>
+
+              {/* Form Gửi Đánh Giá (hiển thị khi event kết thúc) */}
+              {event.endDate && new Date(event.endDate) < new Date() && user?.role === 'ATTENDEE' && (
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem' }}>
+                  <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Viết đánh giá của bạn</h4>
+                  {reviewMsg.text && (
+                    <div className={`msg-box ${reviewMsg.type}`} style={{ marginBottom: '1rem' }}>{reviewMsg.text}</div>
+                  )}
+                  <form onSubmit={handleReviewSubmit}>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Số sao:</label>
+                      <select 
+                        value={rating} 
+                        onChange={e => setRating(parseInt(e.target.value))}
+                        style={{ padding: '0.5rem', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', width: '120px' }}>
+                        <option value={5}>⭐⭐⭐⭐⭐ (5)</option>
+                        <option value={4}>⭐⭐⭐⭐ (4)</option>
+                        <option value={3}>⭐⭐⭐ (3)</option>
+                        <option value={2}>⭐⭐ (2)</option>
+                        <option value={1}>⭐ (1)</option>
+                      </select>
+                    </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>Bình luận:</label>
+                      <textarea 
+                        required
+                        value={comment}
+                        onChange={e => setComment(e.target.value)}
+                        placeholder="Chia sẻ trải nghiệm của bạn về sự kiện này..."
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', minHeight: '100px' }}
+                      />
+                    </div>
+                    <button type="submit" className="btn-register" style={{ width: 'auto', padding: '0.75rem 2rem' }}>
+                      Gửi đánh giá
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Danh sách Đánh Giá */}
+              {reviews.length === 0 ? (
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontStyle: 'italic' }}>Chưa có đánh giá nào cho sự kiện này.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {reviews.map(rev => (
+                    <div key={rev.id} style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem 1.5rem', borderRadius: '8px', borderLeft: '3px solid #6c63ff' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <strong style={{ color: '#fff' }}>{rev.userFullName}</strong>
+                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                          {new Date(rev.createdAt).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                      <div style={{ color: '#facc15', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                        {'⭐'.repeat(rev.rating)}
+                      </div>
+                      <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', whiteSpace: 'pre-wrap' }}>{rev.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       </div>
