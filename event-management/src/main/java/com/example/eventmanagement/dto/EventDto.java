@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.eventmanagement.model.SeatZone;
+import com.example.eventmanagement.model.enums.EventCategory;
 
 public class EventDto {
 
@@ -73,4 +74,13 @@ public class EventDto {
 
     public List<SeatZone> getSeatZones() { return seatZones; }
     public void setSeatZones(List<SeatZone> seatZones) { this.seatZones = seatZones != null ? seatZones : new ArrayList<>(); }
+
+    private EventCategory category = EventCategory.OTHER;
+    private boolean isFeatured = false;
+
+    public EventCategory getCategory() { return category; }
+    public void setCategory(EventCategory category) { this.category = category; }
+
+    public boolean isFeatured() { return isFeatured; }
+    public void setFeatured(boolean featured) { isFeatured = featured; }
 }

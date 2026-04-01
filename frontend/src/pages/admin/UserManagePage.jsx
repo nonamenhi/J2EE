@@ -38,15 +38,9 @@ export default function UserManagePage() {
 
   const handleToggle = async (user) => {
     if (isSelfOrAdmin(user)) return;
-
-    const action = user.enabled ? 'khóa' : 'mở khóa';
-    const confirmMsg = `Bạn có chắc chắn muốn ${action} tài khoản của ${user.fullName}?`;
-
-    if (!window.confirm(confirmMsg)) return;
-
     try {
       await axiosInstance.post(`/admin/users/${user.id}/toggle`);
-      showMsg(`Đã ${action} tài khoản thành công`);
+      showMsg('Đã cập nhật trạng thái tài khoản');
       fetchUsers();
     } catch (err) {
       showMsg(err.response?.data?.error || 'Thao tác thất bại', 'error');

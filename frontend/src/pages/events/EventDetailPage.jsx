@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
+import { getImageUrl } from '../../utils/getImageUrl';
 import useAuthStore from '../../store/authStore';
 import Navbar from '../../components/common/Navbar';
 import './Events.css';
@@ -74,14 +75,19 @@ export default function EventDetailPage() {
     ? (event.seatZones || []).reduce((sum, z) => sum + Math.max(0, z.totalSeats - z.soldSeats), 0)
     : 0;
 
+  const bannerUrl = getImageUrl(event.bannerImagePath);
+
   return (
     <>
       <Navbar />
       <div className="page-container">
         <div className="event-detail">
-          {event.bannerImagePath && (
+          {bannerUrl && (
             <img className="event-detail-banner"
-              src={`http://localhost:8080/uploads/${event.bannerImagePath}`} alt={event.title} />
+              src={bannerUrl}
+              alt={event.title}
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://via.placeholder.com/1200x380?text=No+Image'; }}
+            />
           )}
           <div className="event-detail-content">
             <div className="event-detail-header">

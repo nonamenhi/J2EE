@@ -1,5 +1,6 @@
 package com.example.eventmanagement.controller.api;
 
+import com.example.eventmanagement.dto.UserResponseDto;
 import com.example.eventmanagement.model.Registration;
 import com.example.eventmanagement.model.User;
 import com.example.eventmanagement.model.enums.EventStatus;
@@ -63,8 +64,9 @@ public class AdminApiController {
         }
         PageRequest pageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<User> users = userService.getAllUsers(keyword, roleFilter, pageable);
+        var dtoList = users.getContent().stream().map(UserResponseDto::fromEntity).toList();
         return ResponseEntity.ok(Map.of(
-                "content", users.getContent(),
+                "content", dtoList,
                 "totalPages", users.getTotalPages(),
                 "currentPage", page,
                 "totalElements", users.getTotalElements(),
@@ -79,7 +81,7 @@ public class AdminApiController {
             long eventsCreated = eventRepository.findByOrganizerId(id, PageRequest.of(0, 1)).getTotalElements();
             long registrations = registrationRepository.findByUserId(id).size();
             return ResponseEntity.ok(Map.of(
-                    "user", user,
+                    "user", UserResponseDto.fromEntity(user),
                     "eventsCreated", eventsCreated,
                     "registrations", registrations
             ));

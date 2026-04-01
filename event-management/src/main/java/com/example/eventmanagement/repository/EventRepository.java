@@ -39,4 +39,16 @@ public interface EventRepository extends MongoRepository<Event, String> {
     Page<Event> findByStatusAndTitleContaining(EventStatus status, String keyword, Pageable pageable);
 
     long countByStatus(EventStatus status);
+
+    // ---- Featured & Trending ----
+    List<Event> findByIsFeaturedTrueAndStatus(EventStatus status);
+
+    List<Event> findTop10ByStatusOrderByCurrentAttendeesDesc(EventStatus status);
+
+    // ---- Related events (same category, exclude self) ----
+    @Query("{ 'status': 'PUBLISHED', 'category': ?0, '_id': { $ne: { $oid: ?1 } } }")
+    List<Event> findRelatedByCategory(String category, String excludeId, Pageable pageable);
+
+    @Query("{ 'status': 'PUBLISHED', 'tags': { $in: ?0 }, '_id': { $ne: { $oid: ?1 } } }")
+    List<Event> findRelatedByTags(List<String> tags, String excludeId, Pageable pageable);
 }

@@ -56,6 +56,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             // ====== REST API (Stateless JWT) ======
             .authorizeHttpRequests(auth -> auth
+                // Static uploads (event banners) — served from /uploads, not under /api
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/uploads/**").permitAll()
                 // Public API
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/events", "/api/events/**").permitAll()

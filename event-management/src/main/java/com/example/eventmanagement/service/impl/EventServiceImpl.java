@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +35,7 @@ public class EventServiceImpl implements EventService {
     @Autowired private org.springframework.data.mongodb.core.MongoTemplate mongoTemplate;
 
     @Override
-    public Page<Event> getPublishedEvents(String keyword, String tag, String location,
+    public Page<Event> getPublishedEvents(String keyword, String tag, String location, String category,
                                           java.time.LocalDate dateFrom, java.time.LocalDate dateTo,
                                           Pageable pageable) {
         org.springframework.data.mongodb.core.query.Criteria criteria =
@@ -44,10 +45,15 @@ public class EventServiceImpl implements EventService {
             criteria.and("title").regex(keyword, "i");
         }
         if (StringUtils.hasText(tag)) {
-            criteria.and("tags").is(tag);
+            // Match if any element in tags[] equals this value (case-insensitive for UI keys vs stored casing)
+            String anchored = "^" + Pattern.quote(tag.trim()) + "$";
+            criteria.and("tags").regex(anchored, "i");
         }
         if (StringUtils.hasText(location)) {
             criteria.and("location").regex(location, "i");
+        }
+        if (StringUtils.hasText(category)) {
+            criteria.and("category").is(category);
         }
         if (dateFrom != null) {
             criteria.and("startDate").gte(dateFrom.atStartOfDay());
@@ -197,6 +203,8 @@ public class EventServiceImpl implements EventService {
         event.setMaxCapacity(dto.getMaxCapacity());
         event.setTags(dto.getTags() != null ? dto.getTags() : new ArrayList<>());
         event.setFree(dto.isFree());
+        event.setCategory(dto.getCategory());
+        event.setFeatured(dto.isFeatured());
         if (!dto.isFree() && dto.getSeatZones() != null) {
             event.setSeatZones(dto.getSeatZones());
         } else if (dto.isFree()) {
@@ -278,5 +286,37 @@ public class EventServiceImpl implements EventService {
         report.put("recentEvents", recentEvents.getContent());
 
         return report;
+    }
+
+    // ===== Homepage sections =====
+
+    @Override
+    public List<Event> getTrendingEvents() {
+        return eventRepository.findTop10ByStatusOrderByCurrentAttendeesDesc(EventStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<Event> getFeaturedEvents() {
+        return eventRepository.findByIsFeaturedTrueAndStatus(EventStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<Event> getRelatedEvents(String eventId) {
+        Event event = getEventById(eventId);
+        org.springframework.data.domain.Pageable limit = org.springframework.data.domain.PageRequest.of(0, 6);
+
+        // Try by category first
+        if (event.getCategory() != null) {
+            List<Event> related = eventRepository.findRelatedByCategory(
+                    event.getCategory().name(), eventId, limit);
+            if (!related.isEmpty()) return related;
+        }
+
+        // Fallback to same tags
+        if (event.getTags() != null && !event.getTags().isEmpty()) {
+            return eventRepository.findRelatedByTags(event.getTags(), eventId, limit);
+        }
+
+        return List.of();
     }
 }

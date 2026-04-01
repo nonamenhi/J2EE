@@ -28,13 +28,14 @@ public class EventApiController {
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String tag,
             @RequestParam(defaultValue = "") String location,
+            @RequestParam(defaultValue = "") String category,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size) {
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Event> events = eventService.getPublishedEvents(keyword, tag, location, dateFrom, dateTo, pageable);
+        Page<Event> events = eventService.getPublishedEvents(keyword, tag, location, category, dateFrom, dateTo, pageable);
         List<String> allTags = eventService.getAllTags();
         List<String> allLocations = eventService.getAllLocations();
 
@@ -60,5 +61,23 @@ public class EventApiController {
                 "spotsLeft", spotsLeft,
                 "alreadyRegistered", alreadyRegistered
         ));
+    }
+
+    @GetMapping("/trending")
+    public ResponseEntity<?> trendingEvents() {
+        var events = eventService.getTrendingEvents();
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/featured")
+    public ResponseEntity<?> featuredEvents() {
+        var events = eventService.getFeaturedEvents();
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/{id}/related")
+    public ResponseEntity<?> relatedEvents(@PathVariable String id) {
+        var events = eventService.getRelatedEvents(id);
+        return ResponseEntity.ok(events);
     }
 }

@@ -7,4 +7,5 @@ import java.util.List;
 public interface ReviewRepository extends MongoRepository<Review, String> {
     List<Review> findByEventIdOrderByCreatedAtDesc(String eventId);
     boolean existsByEventIdAndUserId(String eventId, String userId);
+    long countByUserId(String userId);
 }

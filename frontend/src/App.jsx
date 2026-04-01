@@ -25,6 +25,13 @@ import ReportsPage from './pages/admin/ReportsPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import SavedEventsPage from './pages/profile/SavedEventsPage';
 
+// Error pages
+import NotFoundPage from './pages/errors/NotFoundPage';
+
+// Common components
+import Footer from './components/common/Footer';
+import ToastContainer from './components/common/Toast';
+
 // ---- Guards ----
 const PrivateRoute = ({ children }) => {
   const user = useAuthStore((s) => s.user);
@@ -53,6 +60,7 @@ const PublicRoute = ({ children }) => {
 export default function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         {/* Public Auth */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
@@ -82,8 +90,10 @@ export default function App() {
         <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="/profile/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 404 — catch all */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

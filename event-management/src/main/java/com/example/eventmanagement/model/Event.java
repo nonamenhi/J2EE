@@ -1,5 +1,6 @@
 package com.example.eventmanagement.model;
 
+import com.example.eventmanagement.model.enums.EventCategory;
 import com.example.eventmanagement.model.enums.EventStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,6 +27,8 @@ public class Event {
     private String organizerName;
     private boolean isFree = true;                    // true = miễn phí, false = có phí
     private List<SeatZone> seatZones = new ArrayList<>(); // chỉ dùng khi isFree = false
+    private boolean isFeatured = false;               // admin pin lên trang chủ
+    private EventCategory category = EventCategory.OTHER; // danh mục sự kiện
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -73,6 +76,12 @@ public class Event {
 
     public List<SeatZone> getSeatZones() { return seatZones; }
     public void setSeatZones(List<SeatZone> seatZones) { this.seatZones = seatZones != null ? seatZones : new ArrayList<>(); }
+
+    public boolean isFeatured() { return isFeatured; }
+    public void setFeatured(boolean featured) { isFeatured = featured; }
+
+    public EventCategory getCategory() { return category; }
+    public void setCategory(EventCategory category) { this.category = category; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
