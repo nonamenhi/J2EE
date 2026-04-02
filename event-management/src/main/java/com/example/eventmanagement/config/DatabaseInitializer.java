@@ -57,7 +57,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     }
 
     private void seedDefaultUsers() {
-        mongoTemplate.dropCollection(User.class);
         if (userRepository.count() == 0) {
             // Admin - không cần balance
             User admin = buildUser("Admin", "admin@event.com", "admin123", Role.ADMIN, 0L);
@@ -86,7 +85,6 @@ public class DatabaseInitializer implements CommandLineRunner {
     }
 
     private void seedDefaultEvents() {
-        mongoTemplate.dropCollection(Event.class);
         if (eventRepository.count() == 0) {
             User organizer = userRepository.findByEmail("organizer@event.com").orElse(null);
             if (organizer == null) return;

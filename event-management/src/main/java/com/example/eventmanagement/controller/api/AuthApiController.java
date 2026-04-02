@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,6 +53,11 @@ public class AuthApiController {
                             "email", user.getEmail(),
                             "role", user.getRole().name()
                     )
+            ));
+        } catch (DisabledException | LockedException e) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ email: toivaem136317@gmail.com để được hỗ trợ.",
+                    "type", "ACCOUNT_LOCKED"
             ));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body(Map.of("error", "Email hoặc mật khẩu không đúng"));

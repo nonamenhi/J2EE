@@ -18,10 +18,19 @@ import MyEventsPage from './pages/admin/EventManagePage'; // My Events (organize
 // Admin pages
 import DashboardPage from './pages/admin/DashboardPage';
 import UserManagePage from './pages/admin/UserManagePage';
+import AdminEventManagePage from './pages/admin/AdminEventManagePage';
+import ReportsPage from './pages/admin/ReportsPage';
 
 // Profile pages
 import ProfilePage from './pages/profile/ProfilePage';
 import SavedEventsPage from './pages/profile/SavedEventsPage';
+
+// Error pages
+import NotFoundPage from './pages/errors/NotFoundPage';
+
+// Common components
+import Footer from './components/common/Footer';
+import ToastContainer from './components/common/Toast';
 
 // ---- Guards ----
 const PrivateRoute = ({ children }) => {
@@ -51,6 +60,7 @@ const PublicRoute = ({ children }) => {
 export default function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         {/* Public Auth */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
@@ -73,13 +83,17 @@ export default function App() {
         {/* Admin only */}
         <Route path="/admin" element={<AdminRoute><DashboardPage /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><UserManagePage /></AdminRoute>} />
+        <Route path="/admin/events" element={<AdminRoute><AdminEventManagePage /></AdminRoute>} />
+        <Route path="/admin/reports" element={<AdminRoute><ReportsPage /></AdminRoute>} />
 
         {/* Profile */}
         <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="/profile/saved" element={<PrivateRoute><SavedEventsPage /></PrivateRoute>} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* 404 — catch all */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

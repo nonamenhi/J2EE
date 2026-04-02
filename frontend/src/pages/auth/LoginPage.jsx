@@ -8,15 +8,21 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [isLocked, setIsLocked] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLocked(false);
     try {
       await login(form.email, form.password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Đăng nhập thất bại');
+      const data = err.response?.data;
+      if (data?.type === 'ACCOUNT_LOCKED') {
+        setIsLocked(true);
+      }
+      setError(data?.error || 'Đăng nhập thất bại');
     }
   };
 
@@ -25,7 +31,20 @@ export default function LoginPage() {
       <div className="auth-card">
         <div className="auth-logo">🎪 EventHub</div>
         <h2>Đăng nhập</h2>
-        {error && <div className="auth-error">{error}</div>}
+        {error && (
+          <div className={`auth-error ${isLocked ? 'auth-locked' : ''}`}>
+            {isLocked && <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🔒</div>}
+            <div>{error}</div>
+            {isLocked && (
+              <a
+                href="mailto:toivaem136317@gmail.com"
+                style={{ color: '#e94560', fontWeight: 600, display: 'inline-block', marginTop: '0.5rem' }}
+              >
+                📧 toivaem136317@gmail.com
+              </a>
+            )}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>

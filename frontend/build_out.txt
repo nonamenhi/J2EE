@@ -1,0 +1,76 @@
+﻿[36mvite v8.0.2 [32mbuilding client environment for production...[36m[39m
+[2K
+transforming...Γ£ô 104 modules transformed.
+node.exe : [31mΓ£ù[39m Build failed in 
+124ms
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecifie 
+   d: ([31mΓ£ù[39m Build failed in 124  
+  ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeComma 
+   ndError
+ 
+[31merror during build:
+[31mBuild failed with 1 error:
+
+[31m[UNRESOLVED_IMPORT] Error:[0m Could 
+not resolve './Admin.css' in 
+src/components/admin/AdminLayout.jsx
+   [38;5;246mΓò¡[0m[38;5;246mΓöÇ[0m[3
+8;5;246m[[0m 
+src/components/admin/AdminLayout.jsx:3:8 
+[38;5;246m][0m
+   [38;5;246mΓöé[0m
+ [38;5;246m3 Γöé[0m [38;5;249mi[0m[38
+;5;249mm[0m[38;5;249mp[0m[38;5;249mo[
+0m[38;5;249mr[0m[38;5;249mt[0m[38;5;2
+49m [0m"./Admin.css"[38;5;249m;[0m
+ [38;5;240m  Γöé[0m        
+ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+ [38;5;240m  Γöé[0m              
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ Module not 
+found.
+ [38;5;240m  Γöé[0m 
+ [38;5;240m  Γöé[0m 
+[38;5;115mHelp[0m: 
+'src/components/admin/AdminLayout.jsx' is 
+imported by the following path:
+ [38;5;240m  Γöé[0m         - 
+src/components/admin/AdminLayout.jsx
+ [38;5;240m  Γöé[0m         - 
+src/pages/admin/UserManagePage.jsx
+ [38;5;240m  Γöé[0m         - 
+src/App.jsx
+ [38;5;240m  Γöé[0m         - 
+src/main.jsx
+ [38;5;240m  Γöé[0m         - index.html
+[38;5;246mΓöÇΓöÇΓöÇΓò»[0m
+[31m
+    at aggregateBindingErrorsIntoJsError (
+file:///D:/Documents/J2EE/frontend/node_mo
+dules/rolldown/dist/shared/error-D8cGyrC7.
+mjs:48:18)
+    at unwrapBindingResult (file:///D:/Doc
+uments/J2EE/frontend/node_modules/rolldown
+/dist/shared/error-D8cGyrC7.mjs:18:128)
+    at #build (file:///D:/Documents/J2EE/f
+rontend/node_modules/rolldown/dist/shared/
+rolldown-build-CL9PyQ2E.mjs:3313:34)
+    at async buildEnvironment (file:///D:/
+Documents/J2EE/frontend/node_modules/vite/
+dist/node/chunks/node.js:32829:64)
+    at async Object.build (file:///D:/Docu
+ments/J2EE/frontend/node_modules/vite/dist
+/node/chunks/node.js:33251:19)
+    at async Object.buildApp (file:///D:/D
+ocuments/J2EE/frontend/node_modules/vite/d
+ist/node/chunks/node.js:33248:153)
+    at async CAC.<anonymous> (file:///D:/D
+ocuments/J2EE/frontend/node_modules/vite/d
+ist/node/cli.js:778:3) {
+  errors: [Getter/Setter]
+}[39m
