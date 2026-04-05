@@ -100,12 +100,18 @@ public class DatabaseInitializer implements CommandLineRunner {
             }
 
             // 5 sự kiện CÓ PHÍ với zones
+            // {title, location, tags, bannerImageUrl}
             String[][] paidEventData = {
-                {"🎵 Đêm Nhạc Sống 2026", "TP. Hồ Chí Minh", "Music,Live"},
-                {"🎭 Festival Nghệ Thuật Hà Nội", "Hà Nội", "Arts,Culture"},
-                {"🏃 Marathon Thành Phố", "Đà Nẵng", "Sports,Running"},
-                {"🎪 Hội Chợ Công Nghệ Expo", "TP. Hồ Chí Minh", "Technology,Expo"},
-                {"🎨 Triển Lãm Mỹ Thuật Quốc Tế", "Hà Nội", "Arts,Exhibition"},
+                {"🎵 Đêm Nhạc Sống 2026", "TP. Hồ Chí Minh", "Music,Live",
+                    "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1280&h=720&fit=crop"},
+                {"🎭 Festival Nghệ Thuật Hà Nội", "Hà Nội", "Arts,Culture",
+                    "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1280&h=720&fit=crop"},
+                {"🏃 Marathon Thành Phố", "Đà Nẵng", "Sports,Running",
+                    "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=1280&h=720&fit=crop"},
+                {"🎪 Hội Chợ Công Nghệ Expo", "TP. Hồ Chí Minh", "Technology,Expo",
+                    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1280&h=720&fit=crop"},
+                {"🎨 Triển Lãm Mỹ Thuật Quốc Tế", "Hà Nội", "Arts,Exhibition",
+                    "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=1280&h=720&fit=crop"},
             };
 
             for (int i = 0; i < paidEventData.length; i++) {
@@ -121,6 +127,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 e.setOrganizerName(organizer.getFullName());
                 e.setFree(false);
                 e.setCurrentAttendees(0);
+                e.setBannerImagePath(paidEventData[i][3]);
                 e.setCreatedAt(LocalDateTime.now());
                 e.setUpdatedAt(LocalDateTime.now());
 
@@ -139,6 +146,20 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
     }
 
+    // Ảnh banner cho sự kiện miễn phí (community / workshop / seminar)
+    private static final String[] FREE_EVENT_BANNERS = {
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?w=1280&h=720&fit=crop", // community gathering
+        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1280&h=720&fit=crop", // workshop
+        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1280&h=720&fit=crop", // conference
+        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1280&h=720&fit=crop", // seminar
+        "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1280&h=720&fit=crop", // networking
+        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1280&h=720&fit=crop", // lecture
+        "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1280&h=720&fit=crop", // meeting
+        "https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=1280&h=720&fit=crop", // event hall
+        "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1280&h=720&fit=crop", // audience
+        "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1280&h=720&fit=crop", // celebration
+    };
+
     private Event buildBaseEvent(User organizer, int i) {
         Event e = new Event();
         e.setTitle("Sự Kiện Miễn Phí Demo #" + i);
@@ -151,6 +172,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         e.setOrganizerId(organizer.getId());
         e.setOrganizerName(organizer.getFullName());
         e.setCurrentAttendees(0);
+        e.setBannerImagePath(FREE_EVENT_BANNERS[(i - 1) % FREE_EVENT_BANNERS.length]);
         e.setCreatedAt(LocalDateTime.now());
         e.setUpdatedAt(LocalDateTime.now());
         return e;
