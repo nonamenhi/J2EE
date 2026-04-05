@@ -101,11 +101,11 @@ public class DatabaseInitializer implements CommandLineRunner {
 
             // 5 sự kiện CÓ PHÍ với zones
             String[][] paidEventData = {
-                {"🎵 Đêm Nhạc Sống 2026", "TP. Hồ Chí Minh", "Music,Live"},
-                {"🎭 Festival Nghệ Thuật Hà Nội", "Hà Nội", "Arts,Culture"},
-                {"🏃 Marathon Thành Phố", "Đà Nẵng", "Sports,Running"},
-                {"🎪 Hội Chợ Công Nghệ Expo", "TP. Hồ Chí Minh", "Technology,Expo"},
-                {"🎨 Triển Lãm Mỹ Thuật Quốc Tế", "Hà Nội", "Arts,Exhibition"},
+                {"🎵 Đêm Nhạc Sống 2026", "TP. Hồ Chí Minh", "Music,Live", "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&q=80&w=1000"},
+                {"🎭 Festival Nghệ Thuật Hà Nội", "Hà Nội", "Arts,Culture", "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=1000"},
+                {"🏃 Marathon Thành Phố", "Đà Nẵng", "Sports,Running", "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=1000"},
+                {"🎪 Hội Chợ Công Nghệ Expo", "TP. Hồ Chí Minh", "Technology,Expo", "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000"},
+                {"🎨 Triển Lãm Mỹ Thuật Quốc Tế", "Hà Nội", "Arts,Exhibition", "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&q=80&w=1000"},
             };
 
             for (int i = 0; i < paidEventData.length; i++) {
@@ -117,6 +117,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 e.setEndDate(LocalDateTime.now().plusDays(7 + i * 5).plusHours(5));
                 e.setStatus(EventStatus.PUBLISHED);
                 e.setTags(Arrays.asList(paidEventData[i][2].split(",")));
+                e.setBannerImagePath(paidEventData[i][3]);
                 e.setOrganizerId(organizer.getId());
                 e.setOrganizerName(organizer.getFullName());
                 e.setFree(false);
@@ -148,6 +149,16 @@ public class DatabaseInitializer implements CommandLineRunner {
         e.setEndDate(LocalDateTime.now().plusDays(i).plusHours(3));
         e.setStatus(EventStatus.PUBLISHED);
         e.setTags(Arrays.asList("Community", i % 2 == 0 ? "Workshop" : "Seminar"));
+        
+        String[] freeImages = {
+            "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=1000",
+            "https://images.unsplash.com/photo-1558008258-3256797b43f3?auto=format&fit=crop&q=80&w=1000",
+            "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=1000",
+            "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=1000",
+            "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000"
+        };
+        e.setBannerImagePath(freeImages[i % freeImages.length]);
+        
         e.setOrganizerId(organizer.getId());
         e.setOrganizerName(organizer.getFullName());
         e.setCurrentAttendees(0);
